@@ -1,5 +1,6 @@
+%define debug_package %{nil}
 Name:         mod_gearman
-Version:      0.5
+Version:      0.8
 Release:      1
 License:      GNU Public License version 2
 Packager:     Olivier Raginel <babar@cern.ch>
@@ -10,7 +11,7 @@ Source:       http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman-%{ver
 Group:        Applications/Monitoring
 Requires:      libgearman
 BuildRoot:    %{_tmppath}/%{name}-%{version}-root-%(%{__id_u} -n)
-BuildRequires: autoconf, automake
+BuildRequires: autoconf, automake, gcc-c++
 BuildRequires: libtool, libtool-ltdl-devel, libevent-devel
 BuildRequires: libgearman-devel
 Summary:      Gearman module for Nagios / Icinga
