@@ -42,6 +42,7 @@ int main (int argc, char **argv) {
     mod_gm_opt = malloc(sizeof(mod_gm_opt_t));
     set_default_options(mod_gm_opt);
 
+
     /*
      * and parse command line
      */
@@ -66,12 +67,10 @@ int main (int argc, char **argv) {
         }
     }
     mod_gm_opt->debug_level = opt_verbose;
+    mod_gm_opt->logmode     = GM_LOG_MODE_TOOLS;
+    if(server_list_num == 0)
+        server_list[server_list_num++] = "localhost";
     server_list[server_list_num] = NULL;
-
-    if(server_list_num == 0) {
-        printf("Error - no hostname given\n\n");
-        print_usage();
-    }
 
     if(opt_interval <= 0)
         opt_interval = 1;
@@ -99,7 +98,7 @@ int main (int argc, char **argv) {
 
 /* clean exit */
 void clean_exit(int sig) {
-    logger( GM_LOG_DEBUG, "clean_exit(%i)\n", sig );
+    gm_log( GM_LOG_DEBUG, "clean_exit(%i)\n", sig );
 
     endwin();
     exit( EXIT_SUCCESS );
@@ -150,7 +149,7 @@ void print_stats(char * hostname) {
     struct tm now;
     time_t t;
 
-    logger( GM_LOG_DEBUG, "print_stats()\n");
+    gm_log( GM_LOG_DEBUG, "print_stats()\n");
 
     server = strsep(&hst, ":");
     port_c = strsep(&hst, "\x0");
@@ -160,6 +159,7 @@ void print_stats(char * hostname) {
     /* get stats */
     stats = malloc(sizeof(mod_gm_server_status_t));
     stats->function_num = 0;
+    stats->worker_num = 0;
     rc = get_gearman_server_data(stats, &message, &version, server, port);
 
     t   = time(NULL);
@@ -211,5 +211,12 @@ void print_stats(char * hostname) {
     free(message);
     free(version);
     free_mod_gm_status_server(stats);
+    return;
+}
+
+
+/* core log wrapper */
+void write_core_log(char *data) {
+    printf("core logger is not available for tools: %s", data);
     return;
 }

@@ -23,6 +23,11 @@ debug=0
 server=localhost:4730
 
 
+# sets the address of your 2nd (duplicate) gearman job server. Can
+# be specified more than once o add more servers.
+#dupserver=<host>:<port>
+
+
 # defines if the module should distribute execution of
 # eventhandlers.
 eventhandler=yes
@@ -48,6 +53,15 @@ hosts=yes
 # sets a list of servicegroups which will go into seperate
 # queues.
 #servicegroups=name1,name2,name3
+
+# Set this to 'no' if you want Mod-Gearman to only take care about
+# servicechecks. No hostchecks will be processed by Mod-Gearman. Use
+# this option to disable hostchecks and still have the possibility to
+# use hostgroups for easy configuration of your services.
+# If set to yes, you still have to define which hostchecks should be
+# processed by either using 'hosts' or the 'hostgroups' option.
+# Default is Yes.
+do_hostchecks=yes
 
 # enables or disables encryption. It is strongly
 # advised to not disable encryption. Anybody will be

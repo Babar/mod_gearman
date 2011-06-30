@@ -24,10 +24,10 @@
 /* include header */
 #include "send_gearman.h"
 #include "utils.h"
-#include "worker_logger.h"
 #include "gearman.h"
 
 gearman_client_st client;
+gearman_client_st client_dup;
 
 /* work starts here */
 int main (int argc, char **argv) {
@@ -42,6 +42,10 @@ int main (int argc, char **argv) {
         exit( EXIT_FAILURE );
     }
 
+    /* set logging */
+    mod_gm_opt->debug_level = GM_LOG_INFO;
+    mod_gm_opt->logmode     = GM_LOG_MODE_TOOLS;
+
     /* init crypto functions */
     if(mod_gm_opt->encryption == GM_ENABLED) {
         mod_gm_crypt_init(mod_gm_opt->crypt_key);
@@ -55,11 +59,19 @@ int main (int argc, char **argv) {
         exit( EXIT_FAILURE );
     }
 
+    /* create duplicate client */
+    if ( create_client_dup( mod_gm_opt->dupserver_list, &client_dup ) != GM_OK ) {
+        gm_log( GM_LOG_ERROR, "cannot start client for duplicate server\n" );
+        exit( EXIT_FAILURE );
+    }
+
     /* send result message */
     signal(SIGALRM, alarm_sighandler);
     rc = send_result();
 
     gearman_client_free( &client );
+    if( mod_gm_opt->dupserver_num )
+        gearman_client_free( &client_dup );
     mod_gm_free_opt(mod_gm_opt);
     exit( rc );
 }
@@ -81,7 +93,6 @@ int parse_arguments(int argc, char **argv) {
         if ( !strcmp( arg, "help" ) || !strcmp( arg, "--help" )  || !strcmp( arg, "-h" ) ) {
             print_usage();
         }
-        lc(arg);
         if(parse_args_line(mod_gm_opt, arg, 0) != GM_OK) {
             errors++;
             free(arg_c);
@@ -125,6 +136,8 @@ int verify_options(mod_gm_opt_t *opt) {
 
     if ( mod_gm_opt->result_queue == NULL )
         mod_gm_opt->result_queue = GM_DEFAULT_RESULT_QUEUE;
+
+    mod_gm_opt->logmode = GM_LOG_MODE_STDOUT;
 
     return(GM_OK);
 }
@@ -175,7 +188,7 @@ int send_result() {
     char temp_buffer2[GM_BUFFERSIZE];
     int size;
 
-    logger( GM_LOG_TRACE, "send_result()\n" );
+    gm_log( GM_LOG_TRACE, "send_result()\n" );
 
     gettimeofday(&now, NULL);
     if(mod_gm_opt->starttime.tv_sec == 0)
@@ -212,7 +225,7 @@ int send_result() {
     snprintf(mod_gm_opt->message, GM_BUFFERSIZE, "%s", buf);
     free(buf);
 
-    logger( GM_LOG_TRACE, "queue: %s\n", mod_gm_opt->result_queue );
+    gm_log( GM_LOG_TRACE, "queue: %s\n", mod_gm_opt->result_queue );
     temp_buffer1[0]='\x0';
     snprintf( temp_buffer1, sizeof( temp_buffer1 )-1, "type=%s\nhost_name=%s\nstart_time=%i.%i\nfinish_time=%i.%i\nlatency=%i.%i\nreturn_code=%i\n",
               mod_gm_opt->active == GM_ENABLED ? "active" : "passive",
@@ -243,7 +256,7 @@ int send_result() {
     }
     strncat(temp_buffer1, "\n", (sizeof(temp_buffer1)-2));
 
-    logger( GM_LOG_TRACE, "data:\n%s\n", temp_buffer1);
+    gm_log( GM_LOG_TRACE, "data:\n%s\n", temp_buffer1);
 
     if(add_job_to_queue( &client,
                          mod_gm_opt->server_list,
@@ -252,12 +265,31 @@ int send_result() {
                          temp_buffer1,
                          GM_JOB_PRIO_NORMAL,
                          GM_DEFAULT_JOB_RETRIES,
-                         mod_gm_opt->transportmode
+                         mod_gm_opt->transportmode,
+                         TRUE
                         ) == GM_OK) {
-        logger( GM_LOG_TRACE, "send_result_back() finished successfully\n" );
+        gm_log( GM_LOG_TRACE, "send_result_back() finished successfully\n" );
+
+        if( mod_gm_opt->dupserver_num ) {
+            if(add_job_to_queue( &client,
+                                 mod_gm_opt->dupserver_list,
+                                 mod_gm_opt->result_queue,
+                                 NULL,
+                                 temp_buffer1,
+                                 GM_JOB_PRIO_NORMAL,
+                                 GM_DEFAULT_JOB_RETRIES,
+                                 mod_gm_opt->transportmode,
+                                 TRUE
+                            ) == GM_OK) {
+                gm_log( GM_LOG_TRACE, "send_result_back() finished successfully for duplicate server.\n" );
+            }
+            else {
+                gm_log( GM_LOG_TRACE, "send_result_back() finished unsuccessfully for duplicate server\n" );
+            }
+        }
     }
     else {
-        logger( GM_LOG_TRACE, "send_result_back() finished unsuccessfully\n" );
+        gm_log( GM_LOG_TRACE, "send_result_back() finished unsuccessfully\n" );
         return(GM_ERROR);
     }
     return(GM_OK);
@@ -266,7 +298,7 @@ int send_result() {
 
 /* called when check runs into timeout */
 void alarm_sighandler(int sig) {
-    logger( GM_LOG_TRACE, "alarm_sighandler(%i)\n", sig );
+    gm_log( GM_LOG_TRACE, "alarm_sighandler(%i)\n", sig );
 
     printf("got no input! Either send plugin output to stdin or use --message=...\n");
 
@@ -279,4 +311,11 @@ void print_version() {
     printf("send_gearman: version %s running on libgearman %s\n", GM_VERSION, gearman_version());
     printf("\n");
     exit( STATE_UNKNOWN );
+}
+
+
+/* core log wrapper */
+void write_core_log(char *data) {
+    printf("core logger is not available for tools: %s", data);
+    return;
 }

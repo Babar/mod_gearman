@@ -88,6 +88,7 @@ int main (int argc, char **argv) {
         }
     }
     mod_gm_opt->debug_level = opt_verbose;
+    mod_gm_opt->logmode     = GM_LOG_MODE_TOOLS;
     server_list[server_list_num] = NULL;
 
     if(opt_server == NULL) {
@@ -132,10 +133,10 @@ void print_usage() {
     printf("\n");
     printf("check_gearman [ -H=<hostname>                ]\n");
     printf("              [ -t=<timeout>                 ]\n");
-    printf("              [ -w=<jobs warning level>      ]  default: 10\n");
-    printf("              [ -c=<jobs critical level>     ]  default: 100\n");
-    printf("              [ -W=<worker warning level>    ]  default: 25\n");
-    printf("              [ -C=<worker critical level>   ]  default: 50\n");
+    printf("              [ -w=<jobs warning level>      ]  default: %i\n", opt_job_warning);
+    printf("              [ -c=<jobs critical level>     ]  default: %i\n", opt_job_critical);
+    printf("              [ -W=<worker warning level>    ]  default: %i\n", opt_worker_warning);
+    printf("              [ -C=<worker critical level>   ]  default: %i\n", opt_worker_critical);
     printf("              [ -q=<queue>                   ]\n");
     printf("\n");
     printf("\n");
@@ -180,7 +181,7 @@ void print_usage() {
 
 /* called when check runs into timeout */
 void alarm_sighandler(int sig) {
-    logger( GM_LOG_TRACE, "alarm_sighandler(%i)\n", sig );
+    gm_log( GM_LOG_TRACE, "alarm_sighandler(%i)\n", sig );
 
     printf("timeout while waiting for %s\n", opt_server);
 
@@ -354,4 +355,11 @@ int check_worker(char * queue, char * to_send, char * expect) {
 
     printf("%s OK - %s\n", PLUGIN_NAME, result );
     return( STATE_OK );
+}
+
+
+/* core log wrapper */
+void write_core_log(char *data) {
+    printf("core logger is not available for tools: %s", data);
+    return;
 }

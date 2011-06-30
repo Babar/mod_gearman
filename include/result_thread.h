@@ -21,6 +21,12 @@
  *
  *****************************************************************************/
 
+/** @file
+ *  @brief header for the neb result thread
+ *
+ *  @{
+ */
+
 #include "mod_gearman.h"
 
 #include <libgearman/gearman.h>
@@ -32,4 +38,8 @@ void *get_results( gearman_job_st *, void *, size_t *, gearman_return_t * );
 #ifdef GM_DEBUG
 void write_debug_file(char ** text);
 #endif
+
+/**
+ * @}
+ */
 

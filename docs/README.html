@@ -1,0 +1,1720 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+    "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="generator" content="AsciiDoc 8.5.2" />
+<title>Gearman Module for Nagios</title>
+<style type="text/css">
+/* Debug borders */
+p, li, dt, dd, div, pre, h1, h2, h3, h4, h5, h6 {
+/*
+  border: 1px solid red;
+*/
+}
+
+body {
+  margin: 1em 5% 1em 5%;
+}
+
+a {
+  color: blue;
+  text-decoration: underline;
+}
+a:visited {
+  color: fuchsia;
+}
+
+em {
+  font-style: italic;
+  color: navy;
+}
+
+strong {
+  font-weight: bold;
+  color: #083194;
+}
+
+tt {
+  color: navy;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #527bbd;
+  font-family: sans-serif;
+  margin-top: 1.2em;
+  margin-bottom: 0.5em;
+  line-height: 1.3;
+}
+
+h1, h2, h3 {
+  border-bottom: 2px solid silver;
+}
+h2 {
+  padding-top: 0.5em;
+}
+h3 {
+  float: left;
+}
+h3 + * {
+  clear: left;
+}
+
+div.sectionbody {
+  font-family: serif;
+  margin-left: 0;
+}
+
+hr {
+  border: 1px solid silver;
+}
+
+p {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+ul, ol, li > p {
+  margin-top: 0;
+}
+
+pre {
+  padding: 0;
+  margin: 0;
+}
+
+span#author {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+span#email {
+}
+span#revnumber, span#revdate, span#revremark {
+  font-family: sans-serif;
+}
+
+div#footer {
+  font-family: sans-serif;
+  font-size: small;
+  border-top: 2px solid silver;
+  padding-top: 0.5em;
+  margin-top: 4.0em;
+}
+div#footer-text {
+  float: left;
+  padding-bottom: 0.5em;
+}
+div#footer-badges {
+  float: right;
+  padding-bottom: 0.5em;
+}
+
+div#preamble {
+  margin-top: 1.5em;
+  margin-bottom: 1.5em;
+}
+div.tableblock, div.imageblock, div.exampleblock, div.verseblock,
+div.quoteblock, div.literalblock, div.listingblock, div.sidebarblock,
+div.admonitionblock {
+  margin-top: 1.0em;
+  margin-bottom: 1.5em;
+}
+div.admonitionblock {
+  margin-top: 2.0em;
+  margin-bottom: 2.0em;
+  margin-right: 10%;
+  color: #606060;
+}
+
+div.content { /* Block element content. */
+  padding: 0;
+}
+
+/* Block element titles. */
+div.title, caption.title {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  text-align: left;
+  margin-top: 1.0em;
+  margin-bottom: 0.5em;
+}
+div.title + * {
+  margin-top: 0;
+}
+
+td div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content div.title:first-child {
+  margin-top: 0.0em;
+}
+div.content + div.title {
+  margin-top: 0.0em;
+}
+
+div.sidebarblock > div.content {
+  background: #ffffee;
+  border: 1px solid silver;
+  padding: 0.5em;
+}
+
+div.listingblock > div.content {
+  border: 1px solid silver;
+  background: #f4f4f4;
+  padding: 0.5em;
+}
+
+div.quoteblock, div.verseblock {
+  padding-left: 1.0em;
+  margin-left: 1.0em;
+  margin-right: 10%;
+  border-left: 5px solid #dddddd;
+  color: #777777;
+}
+
+div.quoteblock > div.attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock > div.content {
+  white-space: pre;
+}
+div.verseblock > div.attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+/* DEPRECATED: Pre version 8.2.7 verse style literal block. */
+div.verseblock + div.attribution {
+  text-align: left;
+}
+
+div.admonitionblock .icon {
+  vertical-align: top;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-decoration: underline;
+  color: #527bbd;
+  padding-right: 0.5em;
+}
+div.admonitionblock td.content {
+  padding-left: 0.5em;
+  border-left: 3px solid #dddddd;
+}
+
+div.exampleblock > div.content {
+  border-left: 3px solid #dddddd;
+  padding-left: 0.5em;
+}
+
+div.imageblock div.content { padding-left: 0; }
+span.image img { border-style: none; }
+a.image:visited { color: white; }
+
+dl {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+dt {
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  font-style: normal;
+  color: navy;
+}
+dd > *:first-child {
+  margin-top: 0.1em;
+}
+
+ul, ol {
+    list-style-position: outside;
+}
+ol.arabic {
+  list-style-type: decimal;
+}
+ol.loweralpha {
+  list-style-type: lower-alpha;
+}
+ol.upperalpha {
+  list-style-type: upper-alpha;
+}
+ol.lowerroman {
+  list-style-type: lower-roman;
+}
+ol.upperroman {
+  list-style-type: upper-roman;
+}
+
+div.compact ul, div.compact ol,
+div.compact p, div.compact p,
+div.compact div, div.compact div {
+  margin-top: 0.1em;
+  margin-bottom: 0.1em;
+}
+
+div.tableblock > table {
+  border: 3px solid #527bbd;
+}
+thead, p.table.header {
+  font-family: sans-serif;
+  font-weight: bold;
+}
+tfoot {
+  font-weight: bold;
+}
+td > div.verse {
+  white-space: pre;
+}
+p.table {
+  margin-top: 0;
+}
+/* Because the table frame attribute is overriden by CSS in most browsers. */
+div.tableblock > table[frame="void"] {
+  border-style: none;
+}
+div.tableblock > table[frame="hsides"] {
+  border-left-style: none;
+  border-right-style: none;
+}
+div.tableblock > table[frame="vsides"] {
+  border-top-style: none;
+  border-bottom-style: none;
+}
+
+
+div.hdlist {
+  margin-top: 0.8em;
+  margin-bottom: 0.8em;
+}
+div.hdlist tr {
+  padding-bottom: 15px;
+}
+dt.hdlist1.strong, td.hdlist1.strong {
+  font-weight: bold;
+}
+td.hdlist1 {
+  vertical-align: top;
+  font-style: normal;
+  padding-right: 0.8em;
+  color: navy;
+}
+td.hdlist2 {
+  vertical-align: top;
+}
+div.hdlist.compact tr {
+  margin: 0;
+  padding-bottom: 0;
+}
+
+.comment {
+  background: yellow;
+}
+
+.footnote, .footnoteref {
+  font-size: 0.8em;
+}
+
+span.footnote, span.footnoteref {
+  vertical-align: super;
+}
+
+#footnotes {
+  margin: 20px 0 20px 0;
+  padding: 7px 0 0 0;
+}
+
+#footnotes div.footnote {
+  margin: 0 0 5px 0;
+}
+
+#footnotes hr {
+  border: none;
+  border-top: 1px solid silver;
+  height: 1px;
+  text-align: left;
+  margin-left: 0;
+  width: 20%;
+  min-width: 100px;
+}
+
+
+@media print {
+  div#footer-badges { display: none; }
+}
+
+div#toc {
+  margin-bottom: 2.5em;
+}
+
+div#toctitle {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-size: 1.1em;
+  font-weight: bold;
+  margin-top: 1.0em;
+  margin-bottom: 0.1em;
+}
+
+div.toclevel1, div.toclevel2, div.toclevel3, div.toclevel4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.toclevel2 {
+  margin-left: 2em;
+  font-size: 0.9em;
+}
+div.toclevel3 {
+  margin-left: 4em;
+  font-size: 0.9em;
+}
+div.toclevel4 {
+  margin-left: 6em;
+  font-size: 0.9em;
+}
+/* Workarounds for IE6's broken and incomplete CSS2. */
+
+div.sidebar-content {
+  background: #ffffee;
+  border: 1px solid silver;
+  padding: 0.5em;
+}
+div.sidebar-title, div.image-title {
+  color: #527bbd;
+  font-family: sans-serif;
+  font-weight: bold;
+  margin-top: 0.0em;
+  margin-bottom: 0.5em;
+}
+
+div.listingblock div.content {
+  border: 1px solid silver;
+  background: #f4f4f4;
+  padding: 0.5em;
+}
+
+div.quoteblock-attribution {
+  padding-top: 0.5em;
+  text-align: right;
+}
+
+div.verseblock-content {
+  white-space: pre;
+}
+div.verseblock-attribution {
+  padding-top: 0.75em;
+  text-align: left;
+}
+
+div.exampleblock-content {
+  border-left: 3px solid #dddddd;
+  padding-left: 0.5em;
+}
+
+/* IE6 sets dynamically generated links as visited. */
+div#toc a:visited { color: blue; }
+</style>
+<script type="text/javascript">
+/*<![CDATA[*/
+window.onload = function(){asciidoc.footnotes(); asciidoc.toc(2);}
+var asciidoc = {  // Namespace.
+
+/////////////////////////////////////////////////////////////////////
+// Table Of Contents generator
+/////////////////////////////////////////////////////////////////////
+
+/* Author: Mihai Bazon, September 2002
+ * http://students.infoiasi.ro/~mishoo
+ *
+ * Table Of Content generator
+ * Version: 0.4
+ *
+ * Feel free to use this script under the terms of the GNU General Public
+ * License, as long as you do not remove or alter this notice.
+ */
+
+ /* modified by Troy D. Hanson, September 2006. License: GPL */
+ /* modified by Stuart Rackham, 2006, 2009. License: GPL */
+
+// toclevels = 1..4.
+toc: function (toclevels) {
+
+  function getText(el) {
+    var text = "";
+    for (var i = el.firstChild; i != null; i = i.nextSibling) {
+      if (i.nodeType == 3 /* Node.TEXT_NODE */) // IE doesn't speak constants.
+        text += i.data;
+      else if (i.firstChild != null)
+        text += getText(i);
+    }
+    return text;
+  }
+
+  function TocEntry(el, text, toclevel) {
+    this.element = el;
+    this.text = text;
+    this.toclevel = toclevel;
+  }
+
+  function tocEntries(el, toclevels) {
+    var result = new Array;
+    var re = new RegExp('[hH]([2-'+(toclevels+1)+'])');
+    // Function that scans the DOM tree for header elements (the DOM2
+    // nodeIterator API would be a better technique but not supported by all
+    // browsers).
+    var iterate = function (el) {
+      for (var i = el.firstChild; i != null; i = i.nextSibling) {
+        if (i.nodeType == 1 /* Node.ELEMENT_NODE */) {
+          var mo = re.exec(i.tagName);
+          if (mo && (i.getAttribute("class") || i.getAttribute("className")) != "float") {
+            result[result.length] = new TocEntry(i, getText(i), mo[1]-1);
+          }
+          iterate(i);
+        }
+      }
+    }
+    iterate(el);
+    return result;
+  }
+
+  var toc = document.getElementById("toc");
+  var entries = tocEntries(document.getElementById("content"), toclevels);
+  for (var i = 0; i < entries.length; ++i) {
+    var entry = entries[i];
+    if (entry.element.id == "")
+      entry.element.id = "_toc_" + i;
+    var a = document.createElement("a");
+    a.href = "#" + entry.element.id;
+    a.appendChild(document.createTextNode(entry.text));
+    var div = document.createElement("div");
+    div.appendChild(a);
+    div.className = "toclevel" + entry.toclevel;
+    toc.appendChild(div);
+  }
+  if (entries.length == 0)
+    toc.parentNode.removeChild(toc);
+},
+
+
+/////////////////////////////////////////////////////////////////////
+// Footnotes generator
+/////////////////////////////////////////////////////////////////////
+
+/* Based on footnote generation code from:
+ * http://www.brandspankingnew.net/archive/2005/07/format_footnote.html
+ */
+
+footnotes: function () {
+  var cont = document.getElementById("content");
+  var noteholder = document.getElementById("footnotes");
+  var spans = cont.getElementsByTagName("span");
+  var refs = {};
+  var n = 0;
+  for (i=0; i<spans.length; i++) {
+    if (spans[i].className == "footnote") {
+      n++;
+      // Use [\s\S] in place of . so multi-line matches work.
+      // Because JavaScript has no s (dotall) regex flag.
+      note = spans[i].innerHTML.match(/\s*\[([\s\S]*)]\s*/)[1];
+      noteholder.innerHTML +=
+        "<div class='footnote' id='_footnote_" + n + "'>" +
+        "<a href='#_footnoteref_" + n + "' title='Return to text'>" +
+        n + "</a>. " + note + "</div>";
+      spans[i].innerHTML =
+        "[<a id='_footnoteref_" + n + "' href='#_footnote_" + n +
+        "' title='View footnote' class='footnote'>" + n + "</a>]";
+      var id =spans[i].getAttribute("id");
+      if (id != null) refs["#"+id] = n;
+    }
+  }
+  if (n == 0)
+    noteholder.parentNode.removeChild(noteholder);
+  else {
+    // Process footnoterefs.
+    for (i=0; i<spans.length; i++) {
+      if (spans[i].className == "footnoteref") {
+        var href = spans[i].getElementsByTagName("a")[0].getAttribute("href");
+        href = href.match(/#.*/)[0];  // Because IE return full URL.
+        n = refs[href];
+        spans[i].innerHTML =
+          "[<a href='#_footnote_" + n +
+          "' title='View footnote' class='footnote'>" + n + "</a>]";
+      }
+    }
+  }
+}
+
+}
+/*]]>*/
+</script>
+</head>
+<body style="max-width:800">
+<div id="header">
+<h1>Gearman Module for Nagios</h1>
+<div id="toc">
+  <div id="toctitle">Table of Contents</div>
+  <noscript><p><b>JavaScript must be enabled in your browser to display the table of contents.</b></p></noscript>
+</div>
+</div>
+<div id="content">
+<h2 id="_what_is_mod_gearman">What is Mod-Gearman</h2>
+<div class="sectionbody">
+<div class="paragraph"><p><a href="http://labs.consol.de/nagios/mod-gearman">Mod_Gearman</a> is an easy way
+of distributing active Nagios checks across your network and to increase
+nagios scalability. Mod-Gearman can even help to reduce the load on a
+single nagios host, because its much smaller and more efficient in
+executing checks. It consists of three parts:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+There is a NEB module which resides in the Nagios core and adds servicechecks, hostchecks
+and eventhandler to a Gearman queue.
+</p>
+</li>
+<li>
+<p>
+The counterpart is one or more worker clients executing the checks.
+Worker can be configured to only run checks for specific host- or
+servicegroups.
+</p>
+</li>
+<li>
+<p>
+You need at least one <a href="http://gearman.org">Gearman Job Server</a> running
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p><a href="http://labs.consol.de/wp-content/uploads/2010/09/Mod-Gearman.pdf">Have a look at the slides from the Nagios Workshop 2011 in Hannover</a></p></div>
+</div>
+<h2 id="_support_amp_questions">Support &amp; Questions</h2>
+<div class="sectionbody">
+<div class="ulist"><ul>
+<li>
+<p>
+Mod-Gearman has been succesfully tested with Nagios 3.2.3 and Icinga
+  1.2.0 running on Lib-Gearman 0.14. There are no known bugs at the moment.
+  Let me know if you find one.
+</p>
+</li>
+<li>
+<p>
+<a href="https://groups.google.com/group/mod_gearman">google groups mailinglist</a>
+</p>
+</li>
+<li>
+<p>
+<a href="http://labs.consol.de/lang/de/forum/#/categories/mod-gearman">support forum</a>
+</p>
+</li>
+<li>
+<p>
+Debian users may be interested in the <a href="http://labs.consol.de/nagios/mod-gearman/mod-gearman-quickstart-guide/">quickstart guide</a>.
+</p>
+</li>
+</ul></div>
+</div>
+<h2 id="_how_does_it_work">How does it work</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>When the broker module is loaded, it captures all servicecheck,
+hostcheck and the eventhandler events. Eventhandler are sent to a
+generic <em>eventhandler</em> queue. Checks for hosts which are in one of the
+specified hostgroups, are sent into a seperate hostgroup queue. All
+non matching hosts are sent to a generic <em>hosts</em> queue. Checks for
+services are first checked against the list of servicegroups, then
+against the hostgroups and if none matches they will be sent into a
+generic <em>service</em> queue.
+The NEB module starts a single thread, which monitors the
+<em>check_results</em> where all results come in.</p></div>
+<a title="mod gearman architecture" rel="lightbox[mod_gm]" href="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman-e1284455350110.png"><img src="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman-e1284455350110.png" alt="mod_gearman architecture" width="480" height="300" style="float:none" /></a>
+<div class="paragraph"><p>A simple example queue would look like:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>+---------------+------------------+--------------+--------------+
+| Queue Name    | Worker Available | Jobs Waiting | Jobs Running |
++---------------+------------------+--------------+--------------+
+| check_results | 1                | 0            | 0            |
+| host          | 50               | 0            | 1            |
+| service       | 50               | 0            | 13           |
+| eventhandler  | 50               | 0            | 0            |
++---------------+------------------+--------------+--------------+</tt></pre>
+</div></div>
+<div class="paragraph"><p>There is one queue for the results and two for the checks plus the
+eventhandler.</p></div>
+<div class="paragraph"><p>The workflow is simple:</p></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+Nagios wants to execute a service check.
+</p>
+</li>
+<li>
+<p>
+The check is intercepted by the Mod-Gearman neb module.
+</p>
+</li>
+<li>
+<p>
+Mod-Gearman puts the job into the <em>service</em> queue.
+</p>
+</li>
+<li>
+<p>
+A worker grabs the job and puts back the result into the
+    <em>check_results</em> queue
+</p>
+</li>
+<li>
+<p>
+Mod-Gearman grabs the result job and puts back the result onto the
+    check result list
+</p>
+</li>
+<li>
+<p>
+The nagios reaper reads all checks from the result list and
+    updates hosts and services
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>You can set some host or servicegroups for special worker. This
+example uses a seperate hostgroup for Japan and a seperate
+servicegroup for jmx4perl.</p></div>
+<div class="paragraph"><p>It would look like this:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>+-----------------------+------------------+--------------+--------------+
+| Queue Name            | Worker Available | Jobs Waiting | Jobs Running |
++-----------------------+------------------+--------------+--------------+
+| check_results         | 1                | 0            | 0            |
+| host                  | 50               | 0            | 1            |
+| service               | 50               | 0            | 13           |
+| servicegroup_jmx4perl | 3                | 0            | 3            |
+| hostgroup_japan       | 3                | 1            | 3            |
+| eventhandler          | 50               | 0            | 0            |
++-----------------------+------------------+--------------+--------------+</tt></pre>
+</div></div>
+<div class="paragraph"><p>You still have the generic queues and in addition there are two queues
+for the specific groups.</p></div>
+<div class="paragraph"><p>The worker processes will take jobs from the queues and put the result
+back into the check_result queue which will then be taken back by the
+neb module and put back into the nagios core. A worker can work on one
+or more queues. So you could start a worker which only handles the
+<em>hostgroup_japan</em> group.  One worker for the <em>jmx4perl</em> checks and one
+worker which covers the other queues. There can be more than one
+worker on each queue to share the load.</p></div>
+<a title="mod gearman queues" rel="lightbox[mod_gm]" href="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman_queues.png"><img src="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman_queues.png" alt="mod_gearman architecture " width="360" height="270" style="float:none" /></a>
+</div>
+<h2 id="_common_scenarios">Common Scenarios</h2>
+<div class="sectionbody">
+<h3 id="_load_balancing">Load Balancing</h3><div style="clear:left"></div>
+<a title="Load Balancing" rel="lightbox[mod_gm]"
+href="http://labs.consol.de/wp-content/uploads/2010/09/sample_load_balancing.png"><img
+src="http://labs.consol.de/wp-content/uploads/2010/09/sample_load_balancing.png"
+alt="Load Balancing" width="300" height="125" style="float:none" /></a>
+<div class="paragraph"><p>The easiest variant is a simple load balancing. For example if your
+single nagios box just cannot handle the load, you could just add a
+worker in the same network (or even on the same host) to reduce your
+load on the nagios box. Therefor we just enable hosts, services and
+eventhandler on the server and the worker.</p></div>
+<h3 id="_distributed_monitoring">Distributed Monitoring</h3><div style="clear:left"></div>
+<a title="Distributed Monitoring" rel="lightbox[mod_gm]" href="http://labs.consol.de/wp-content/uploads/2010/09/sample_distributed.png"><img src="http://labs.consol.de/wp-content/uploads/2010/09/sample_distributed.png" alt="Distributed Monitoring" width="350" height="125" style="float:none" /></a>
+<div class="paragraph"><p>If your checks have to be run from different network segments, then
+you can use the hostgroups (or servicegroups) to define a hostgroup
+for specific worker. The general hosts and services queue is disabled
+for this worker and just the hosts and services from the given
+hostgroup will be processed.</p></div>
+<h3 id="_distributed_monitoring_with_load_balancing">Distributed Monitoring with Load Balancing</h3><div style="clear:left"></div>
+<a title="Distributed Monitoring with Load Balancing" rel="lightbox[mod_gm]" href="http://labs.consol.de/wp-content/uploads/2010/09/sample_distributed_load_balanced.png"><img src="http://labs.consol.de/wp-content/uploads/2010/09/sample_distributed_load_balanced.png" alt="Distributed Monitoring with Load Balancing" width="350" height="225" style="float:none" /></a>
+<div class="paragraph"><p>Your distributed setup could easily be extended to a load balanced
+setup with just adding more worker of the same config.</p></div>
+<h3 id="_nsca_replacement">NSCA Replacement</h3><div style="clear:left"></div>
+<a title="NSCA Replacement" rel="lightbox[mod_gm]" href="http://labs.consol.de/wp-content/uploads/2010/09/nsca_replacement.png"><img src="http://labs.consol.de/wp-content/uploads/2010/09/nsca_replacement.png" alt="NSCA Replacement" width="300" height="220" style="float:none" /></a>
+<div class="paragraph"><p>If you just want to replace a current NSCA solution, you could load
+the Mod-Gearman NEB module and disable all distribution features. You
+still can receive passive results by the core send via
+send_gearman / send_multi. Make sure you use the same encryption
+settings like the neb module or your core won&#8217;t be able to process the
+results.</p></div>
+</div>
+<h2 id="_installation">Installation</h2>
+<div class="sectionbody">
+<h3 id="_omd">OMD</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Using OMD is propably the easiest way of installing and using
+Mod-Gearman. You just have to run <em>omd config</em> or set Mod-Gearman
+to <em>on</em>.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>OMD[test]:~$ omd config set MOD_GEARMAN on</tt></pre>
+</div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">Mod-Gearman is included in <a href="http://omdistro.org">OMD</a> since version 0.48.</td>
+</tr></table>
+</div>
+<h3 id="_from_source">From Source</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Pre Requirements:</p></div>
+<div class="ulist"><ul>
+<li>
+<p>
+gcc / g++
+</p>
+</li>
+<li>
+<p>
+autoconf / automake / autoheader
+</p>
+</li>
+<li>
+<p>
+libtool
+</p>
+</li>
+<li>
+<p>
+libgearman (&gt;= 0.14)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>Download the tarball and perform the following steps:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>#&gt; ./configure
+#&gt; make
+#&gt; make install</tt></pre>
+</div></div>
+<div class="paragraph"><p>Then add the mod_gearman.o to your nagios installation and add a
+broker line to your nagios.cfg:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>broker_module=.../mod_gearman.o server=localhost:4730 eventhandler=yes services=yes hosts=yes</tt></pre>
+</div></div>
+<div class="paragraph"><p>see <a href="#_configuration">Configuration</a> for details on all parameters</p></div>
+<div class="paragraph"><p>The last step is to start one or more worker. You may use the same
+configuration file as for the neb module.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>./mod_gearman_worker --server=localhost:4730 --services --hosts</tt></pre>
+</div></div>
+<div class="paragraph"><p>or use the supplied init script.</p></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">Make sure you have started your Gearmand job server. Usually
+it can be started with</td>
+</tr></table>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>/usr/sbin/gearmand -t 10 -j 0</tt></pre>
+</div></div>
+<div class="paragraph"><p>or a supplied init script (extras/gearmand-init).</p></div>
+<h4 id="_patch_nagios">Patch Nagios</h4>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">The needed patch is already included since Nagios 3.2.2. Use the patch if you
+use an older version.</td>
+</tr></table>
+</div>
+<div class="paragraph"><p>It is not possible to distribute eventhandler with Nagios versions
+prior 3.2.2. Just apply the patch from the patches directory to your
+Nagios sources and build Nagios again if you want to use an older
+version. You only need to replace the nagios binary. Nothing else has
+changed.  If you plan to distribute only Host/Servicechecks, no patch
+is needed.</p></div>
+</div>
+<h2 id="_configuration">Configuration</h2>
+<div class="sectionbody">
+<h3 id="_nagios_core">Nagios Core</h3><div style="clear:left"></div>
+<div class="paragraph"><p>A sample broker in your nagios.cfg could look like:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>broker_module=/usr/local/share/nagios/mod_gearman.o keyfile=/usr/local/share/nagios/secret.txt server=localhost eventhandler=yes hosts=yes services=yes</tt></pre>
+</div></div>
+<div class="paragraph"><p>See the following list for a detailed explanation of available
+options:</p></div>
+<h3 id="_common_options">Common Options</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Shared options for worker and the NEB module:</p></div>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+config
+</dt>
+<dd>
+<p>
+    include config from this file. Options are the same as described here.
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>config=/etc/nagios3/mod_gm_worker.conf</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+debug
+</dt>
+<dd>
+<p>
+    use debug to increase the verbosity of the module.
+    Possible values are:
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<tt>0</tt> - only errors
+</p>
+</li>
+<li>
+<p>
+<tt>1</tt> - debug messages
+</p>
+</li>
+<li>
+<p>
+<tt>2</tt> - trace messages
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>Default is 0.</p></div>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>debug=1</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+logmode
+</dt>
+<dd>
+<p>
+    set way of logging.
+    Possible values are:
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<tt>automatic</tt> - logfile when a logfile is specified. stdout when
+                    no logfile is given.
+                    stdout for tools.
+</p>
+</li>
+<li>
+<p>
+<tt>stdout</tt>    - just print all messages to stdout
+</p>
+</li>
+<li>
+<p>
+<tt>syslog</tt>    - use syslog for all log events
+</p>
+</li>
+<li>
+<p>
+<tt>file</tt>      - use logfile
+</p>
+</li>
+<li>
+<p>
+<tt>core</tt>      - use nagios internal loging (not thread safe! Use
+                    with care)
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>Default is automatic.</p></div>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>debug=1</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+logfile
+</dt>
+<dd>
+<p>
+Path to the logfile.
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>logfile=/path/to/log.file</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+server
+</dt>
+<dd>
+<p>
+sets the address of your gearman job server. Can be specified
+more than once to add more server. Mod-Gearman uses
+the first server available.
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>server=localhost:4730,remote_host:4730</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+eventhandler
+</dt>
+<dd>
+<p>
+defines if the module should distribute execution of
+eventhandlers.
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>eventhandler=yes</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+services
+</dt>
+<dd>
+<p>
+defines if the module should distribute execution of service checks.
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>services=yes</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+hosts
+</dt>
+<dd>
+<p>
+defines if the module should distribute execution of host checks.
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>hosts=yes</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+hostgroups
+</dt>
+<dd>
+<p>
+sets a list of hostgroups which will go into seperate queues.
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>hostgroups=name1,name2,name3</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+servicegroups
+</dt>
+<dd>
+<p>
+sets a list of servicegroups which will go into seperate queues.
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>servicegroups=name1,name2,name3</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+encryption
+</dt>
+<dd>
+<p>
+enables or disables encryption. It is strongly advised to not disable
+encryption. Anybody will be able to inject packages to your worker. Encryption
+is enabled by default and you have to explicitly disable it. When using
+encryption, you will either have to specify a shared password with <tt>key=...</tt> or
+a keyfile with <tt>keyfile=...</tt>  Default is On.
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>encryption=yes</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+key
+</dt>
+<dd>
+<p>
+A shared password which will be used for encryption of data pakets. Should be at
+least 8 bytes long. Maximum length is 32 characters.
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>key=secret</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+keyfile
+</dt>
+<dd>
+<p>
+The shared password will be read from this file. Use either key or keyfile.
+Only the first 32 characters from the first line will be used.
+Whitespace to the right will be trimmed.
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>keyfile=/path/to/secret.file</tt></pre>
+</div></div>
+</div></div>
+</dd>
+</dl></div>
+<h3 id="_server_options">Server Options</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Additional options for the NEB module only:</p></div>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+localhostgroups
+</dt>
+<dd>
+<p>
+sets a list of hostgroups which will not be executed by gearman. They are just
+passed through.
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>localhostgroups=name1,name2,name3</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+localservicegroups
+</dt>
+<dd>
+<p>
+sets a list of servicegroups which will not be executed by gearman. They are
+just passed through.
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>localservicegroups=name1,name2,name3</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+do_hostchecks
+</dt>
+<dd>
+<p>
+Set this to <em>no</em> if you want Mod-Gearman to only take care about
+servicechecks. No hostchecks will be processed by Mod-Gearman. Use
+this option to disable hostchecks and still have the possibility to
+use hostgroups for easy configuration of your services.
+If set to yes, you still have to define which hostchecks should be
+processed by either using <em>hosts</em> or the <em>hostgroups</em> option.
+Default: <tt>yes</tt>
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>do_hostchecks=yes</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+result_workers
+</dt>
+<dd>
+<p>
+Number of result worker threads. Usually one is enough. You may increase the
+value if your result queue is not processed fast enough.
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>result_workers=3</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+perfdata
+</dt>
+<dd>
+<p>
+defines if the module should distribute perfdata to gearman. Note: processing
+of perfdata is not part of mod_gearman. You will need additional worker for
+handling performance data. For example: <a href="http://www.pnp4nagios.org">PNP4Nagios</a>
+Performance data is just written to the gearman queue.
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>perfdata=yes</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+perfdata_mode
+</dt>
+<dd>
+<p>
+    There will be only a single job for each host or servier when putting
+    performance data onto the perfdata_queue in overwrite mode. In
+    append mode perfdata will be stored as long as there is memory
+    left. Setting this to <em>overwrite</em> helps preventing the perf_data
+    queue from getting to big. Monitor your perfdata carefully when
+    using the <em>append</em> mode.
+    Possible values are:
+</p>
+<div class="ulist"><ul>
+<li>
+<p>
+<tt>1</tt> - overwrite
+</p>
+</li>
+<li>
+<p>
+<tt>2</tt> - append
+</p>
+</li>
+</ul></div>
+<div class="paragraph"><p>Default is 1.</p></div>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>perfdata_mode=1</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+result_queue
+</dt>
+<dd>
+<p>
+sets the result queue. Necessary when putting jobs from several nagios instances
+onto the same gearman queues. Default: <tt>check_results</tt>
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>result_queue=check_results_nagios1</tt></pre>
+</div></div>
+</div></div>
+</dd>
+</dl></div>
+<h3 id="_worker_options">Worker Options</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Additional options for worker:</p></div>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+identifier
+</dt>
+<dd>
+<p>
+Identifier for this worker. Will be used for the <em>worker_identifier</em> queue for
+status requests. You may want to change it if you are using more than one worker
+on a single host.  Defaults to the current hostname.
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>identifier=hostname_test</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+pidfile
+</dt>
+<dd>
+<p>
+Path to the pidfile.
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>pidfile=/path/to/pid.file</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+min-worker
+</dt>
+<dd>
+<p>
+Minimum number of worker processes which should run at any time. Default: 1
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>min-worker=1</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+max-worker
+</dt>
+<dd>
+<p>
+Maximum number of worker processes which should run at any time. You may set
+this equal to min-worker setting to disable dynamic starting of workers. When
+setting this to 1, all services from this worker will be executed one after
+another. Default: 20
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>max-worker=20</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+spawn-rate
+</dt>
+<dd>
+<p>
+Defines the rate of spawed worker per second as long as there are jobs
+waiting. Default: 1
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>spawn-rate=1</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+idle-timeout
+</dt>
+<dd>
+<p>
+Time in seconds after which an idling worker exits. This parameter
+controls how fast your waiting workers will exit if there are no jobs
+waiting. Set to 0 to disable the idle timeout. Default: 10
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>idle-timeout=30</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+max-jobs
+</dt>
+<dd>
+<p>
+Controls the amount of jobs a worker will do before he exits. Use this to
+control how fast the amount of workers will go down after high load times.
+Disabled when set to 0. Default: 1000
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>max-jobs=500</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+fork_on_exec
+</dt>
+<dd>
+<p>
+Use this option to disable an extra fork for each plugin execution. This option
+will reduce the load on the worker host. Default: yes
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>fork_on_exec=no</tt></pre>
+</div></div>
+</div></div>
+</dd>
+<dt class="hdlist1">
+dupserver
+</dt>
+<dd>
+<p>
+sets the address of gearman job server where duplicated result will be sent to.
+Can be specified more than once to add more server. Useful for duplicating
+results for a reporting installation or remote gui.
+</p>
+<div class="exampleblock">
+<div class="exampleblock-content">
+<div class="literalblock">
+<div class="content">
+<pre><tt>dupserver=logserver:4730,logserver2:4730</tt></pre>
+</div></div>
+</div></div>
+</dd>
+</dl></div>
+</div>
+<h2 id="_queue_names">Queue Names</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>You may want to watch your gearman server job queue. The shipped
+tools/queue_top.pl does this. It polls the gearman server every second
+and displays the current queue statistics.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>+-----------------------+--------+-------+-------+---------+
+| Name                  | Worker | Avail | Queue | Running |
++-----------------------+--------+-------+-------+---------+
+| check_results         | 1      | 1     | 0     | 0       |
+| host                  | 3      | 3     | 0     | 0       |
+| service               | 3      | 3     | 0     | 0       |
+| eventhandler          | 3      | 3     | 0     | 0       |
+| servicegroup_jmx4perl | 3      | 3     | 0     | 0       |
+| hostgroup_japan       | 3      | 3     | 0     | 0       |
++-----------------------+--------+-------+-------+---------+</tt></pre>
+</div></div>
+<div class="dlist"><dl>
+<dt class="hdlist1">
+check_results
+</dt>
+<dd>
+<p>
+this queue is monitored by the neb module to fetch results from the
+worker. You don&#8217;t need an extra worker for this queue. The number of
+result workers can be set to a maximum of 256, but usually one is
+enough. One worker is capable of processing several thousand results
+per second.
+</p>
+</dd>
+<dt class="hdlist1">
+host
+</dt>
+<dd>
+<p>
+This is the queue for generic host checks. If you enable host checks
+with the hosts=yes switch. Before a host goes into this queue, it is
+checked if any of the local groups matches or a seperate hostgroup
+machtes. If nothing matches, then this queue is used.
+</p>
+</dd>
+<dt class="hdlist1">
+service
+</dt>
+<dd>
+<p>
+This is the queue for generic service checks. If you enable service
+checks with the <tt>services=yes</tt> switch. Before a service goes into this
+queue it is checked against the local host- and service-groups. Then
+the normal host- and servicegroups are checked and if none matches,
+this queue is used.
+</p>
+</dd>
+<dt class="hdlist1">
+hostgroup_&lt;name&gt;
+</dt>
+<dd>
+<p>
+This queue is created for every hostgroup which has been defined by
+the hostgroups=&#8230; option. Make sure you have at least one worker for
+every hostgroup you specify. Start the worker with <tt>--hostgroups=...</tt>
+to work on hostgroup queues. Note that this queue may also contain
+service checks if the hostgroup of a service matches.
+</p>
+</dd>
+<dt class="hdlist1">
+servicegroup_&lt;name&gt;
+</dt>
+<dd>
+<p>
+This queue is created for every servicegroup which has been defined by
+the <tt>servicegroup=...</tt> option.
+</p>
+</dd>
+<dt class="hdlist1">
+eventhandler
+</dt>
+<dd>
+<p>
+This is the generic queue for all eventhandler. Make sure you have a
+worker for this queue if you have eventhandler enabled. Start the
+worker with <tt>--events</tt> to work on this queue.
+</p>
+</dd>
+<dt class="hdlist1">
+perfdata
+</dt>
+<dd>
+<p>
+This is the generic queue for all performance data. It is created and
+used if you switch on <tt>--perfdata=yes</tt>. Performance data cannot be
+processed by the gearman worker itself. You will need
+<a href="http://www.pnp4nagios.org">PNP4Nagios</a> therefor.
+</p>
+</dd>
+</dl></div>
+</div>
+<h2 id="_performance">Performance</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>While the main motivation was to ease distributed configuration, this
+plugin also helps to spread the load on multiple worker. Throughput is
+mainly limited by the amount of jobs a single nagios instance can put
+onto the Gearman job server. Keep the Gearman job server close to the
+nagios box. Best practice is to put both on the same machine. Both
+processes will utilize one core. Some testing with my workstation
+(Dual Core 2.50GHz) and two worker boxes gave me these results. I used
+a sample Nagios installation with 20.000 Services at a 1 minute
+interval and a sample plugin which returns just a single line of
+output. I got over 300 Servicechecks per second, which means you could
+easily setup 100.000 services at a 5 minute interval with a single
+nagios box. The amount of worker boxes depends on your check types.</p></div>
+<a title="mod gearman performance" rel="lightbox[mod_gm]" href="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman_performance_2.png"><img src="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman_performance_2.png" alt="mod_gearman performance" width="473" height="122" style="float:none" /></a>
+<a title="mod gearman performance" rel="lightbox[mod_gm]" href="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman_performance_1.png"><img src="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman_performance_1.png" alt="mod_gearman performance" width="424" height="176" style="float:none" /></a>
+</div>
+<h2 id="_how_to">How To</h2>
+<div class="sectionbody">
+<h3 id="_how_to_monitor_job_server_and_worker">How to Monitor Job Server and Worker</h3><div style="clear:left"></div>
+<div class="paragraph"><p>Use the supplied check_gearman to monitor your worker and job server.
+Worker have a own queue for status requests.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>%&gt; ./check_gearman -H &lt;job server hostname&gt; -q worker_&lt;worker hostname&gt; -t 10 -s check
+check_gearman OK - localhost has 10 worker and is working on 1 jobs|worker=10 running=1 total_jobs_done=1508</tt></pre>
+</div></div>
+<div class="paragraph"><p>This will send a test job to the given job server and the worker will
+respond with some statistical data.</p></div>
+<div class="paragraph"><p>Job server can be monitored with:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>%&gt; ./check_gearman -H localhost -t 20
+check_gearman OK - 6 jobs running and 0 jobs waiting.|check_results=0;0;1;10;100 host=0;0;9;10;100 service=0;6;9;10;100</tt></pre>
+</div></div>
+<h3 id="_how_to_submit_passive_checks">How to Submit Passive Checks</h3><div style="clear:left"></div>
+<div class="paragraph"><p>You can use send_gearman to submit active and passive checks to a
+gearman job server where they will be processed just like a finished
+check would do.</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>%&gt; ./send_gearman --server=&lt;job server&gt; --encryption=no --host="&lt;hostname&gt;" --service="&lt;service&gt;" --message="message"</tt></pre>
+</div></div>
+<h3 id="_how_to_submit_check_multi_results">How to Submit check_multi Results</h3><div style="clear:left"></div>
+<div class="paragraph"><p>check_multi is a plugin which executes multiple child checks.
+See more details about the feed_passive mode at:
+<a href="http://www.my-plugin.de/wiki/projects/check_multi/feed_passive">www.my-plugin.de</a></p></div>
+<div class="paragraph"><p>You can pass such child checks to Nagios via the mod_gearman
+neb module:</p></div>
+<div class="listingblock">
+<div class="content">
+<pre><tt>%&gt; check_multi -f multi.cmd -r 256 | ./send_multi --server=&lt;job server&gt; --encryption=no --host="&lt;hostname&gt;" --service="&lt;service&gt;"</tt></pre>
+</div></div>
+<div class="paragraph"><p>If you want to use only check_multi and no other workers, you can
+achieve this with the following neb module settings:</p></div>
+<div class="literalblock">
+<div class="content">
+<pre><tt>broker_module=/usr/local/share/nagios/mod_gearman.o server=localhost encryption=no eventhandler=no hosts=no services=no hostgroups=does_not_exist</tt></pre>
+</div></div>
+<div class="admonitionblock">
+<table><tr>
+<td class="icon">
+<div class="title">Note</div>
+</td>
+<td class="content">encryption is not necessary if you both run the check_multi checks
+and the nagios check_results queue on the same server.</td>
+</tr></table>
+</div>
+</div>
+<h2 id="_what_about_notifications">What About Notifications</h2>
+<div class="sectionbody">
+<div class="paragraph"><p>Notifications are very difficult to distribute. And i think its not
+very useful too. So this feature will not be implemented in the near
+future.</p></div>
+</div>
+<h2 id="_hints">Hints</h2>
+<div class="sectionbody">
+<div class="ulist"><ul>
+<li>
+<p>
+Make sure you have at least one worker for every queue. You should
+   monitor that (check_gearman).
+</p>
+</li>
+<li>
+<p>
+Add Logfile checks for your gearmand server and mod_gearman
+   worker.
+</p>
+</li>
+<li>
+<p>
+Make sure all gearman checks are in local groups. Gearman self
+   checks should not be monitored through gearman.
+</p>
+</li>
+<li>
+<p>
+Checks which write directly to the nagios command file (ex.:
+   check_mk) have to run on a local worker or have to be excluded by
+   the localservicegroups.
+</p>
+</li>
+<li>
+<p>
+Keep the gearmand server close to Nagios for better performance.
+</p>
+</li>
+<li>
+<p>
+If you have some checks which should not run parallel, just setup a
+   single worker with --max-worker=1 and they will be executed one
+   after another. For example for cpu intesive checks with selenium.
+</p>
+</li>
+<li>
+<p>
+Make sure all your worker have the nagios-plugins available under
+   the same path. Otherwise they could&#8217;nt be found by the worker.
+</p>
+</li>
+</ul></div>
+</div>
+<h2 id="_download">Download</h2>
+<div class="sectionbody">
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman-1.0.7.tar.gz">version 1.0.7 - in progress</a>
+</p>
+</li>
+<li>
+<p>
+Mod Gearman is available for download at: <a href="http://labs.consol.de/nagios/mod-gearman">http://labs.consol.de/nagios/mod-gearman</a>
+</p>
+</li>
+<li>
+<p>
+The source is available at GitHub: <a href="http://github.com/sni/mod_gearman">http://github.com/sni/mod_gearman</a>
+</p>
+</li>
+</ul></div>
+<h3 id="_archive">Archive</h3><div style="clear:left"></div>
+<div class="ulist"><ul>
+<li>
+<p>
+<a href="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman-1.0.7.tar.gz">version 1.0.7 - in progress</a>
+</p>
+</li>
+<li>
+<p>
+<a href="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman-1.0.6.tar.gz">version 1.0.6 - June 04 2011</a>
+</p>
+</li>
+<li>
+<p>
+<a href="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman-1.0.5.tar.gz">version 1.0.5 - May 17 2011</a>
+</p>
+</li>
+<li>
+<p>
+<a href="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman-1.0.4.tar.gz">version 1.0.4 - April 17 2011</a>
+</p>
+</li>
+<li>
+<p>
+<a href="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman-1.0.3.tar.gz">version 1.0.3 - March 23 2011</a>
+</p>
+</li>
+<li>
+<p>
+<a href="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman-1.0.2.tar.gz">version 1.0.2 - March 13 2011</a>
+</p>
+</li>
+<li>
+<p>
+<a href="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman-1.0.1.tar.gz">version 1.0.1 - March 05 2011</a>
+</p>
+</li>
+<li>
+<p>
+<a href="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman-1.0.tar.gz">version 1.0 - February 08 2011</a>
+</p>
+</li>
+<li>
+<p>
+<a href="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman-0.9.tar.gz">version 0.9 - January 17 2011</a>
+</p>
+</li>
+<li>
+<p>
+<a href="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman-0.8.tar.gz">version 0.8 - November 17 2010</a>
+</p>
+</li>
+<li>
+<p>
+<a href="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman-0.7.tar.gz">version 0.7 - November 03 2010</a>
+</p>
+</li>
+<li>
+<p>
+<a href="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman-0.6.tar.gz">version 0.6 - October 13 2010</a>
+</p>
+</li>
+<li>
+<p>
+<a href="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman-0.5.tar.gz">version 0.5 - October 01 2010</a>
+</p>
+</li>
+<li>
+<p>
+<a href="http://labs.consol.de/wp-content/uploads/2010/09/mod_gearman-0.4.tar.gz">version 0.4 - September 25 2010</a>
+</p>
+</li>
+</ul></div>
+</div>
+</div>
+<div id="footnotes"><hr /></div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2011-06-18 16:18:47 CEST
+</div>
+</div>
+</body>
+</html>

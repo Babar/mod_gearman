@@ -5,12 +5,13 @@ TODO LIST
 General
 -------
 
- - remove duplicate errors from logfile
  - handle sync host checks correctly
+ - maybe use libmcrypt for encryption
+ - "include" directorys for the config file
 
 Bugs
 ----
- none known
+ - none known
 
 WISH LIST
 =========

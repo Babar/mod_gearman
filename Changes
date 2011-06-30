@@ -1,5 +1,62 @@
 This file documents the revision history for mod_gearman.
 
+1.0.7  Mon Jun 27 14:58:18 CEST 2011
+          - show plugin output for exit codes > 3
+          - fixed send_multi timestamps when client clock is screwed
+          - fixed send_multi for libgearman > 0.14
+
+1.0.6  Sat Jun  4 11:47:02 CEST 2011
+          - expand server definitions from :4730 to localhost:4730
+          - fixed latency calculation (was below zero sometimes)
+
+1.0.5  Tue May 17 17:46:36 CEST 2011
+          - added dupserver option to send_gearman and send_multi too
+          - removed warning for the passive only mode
+
+1.0.4  Sun Apr 17 17:58:47 CEST 2011
+          - added generic logger
+            - enables logging to stdout, file, syslog or nagios
+          - changed latency calculation (use time of next_check instead of time of job submission)
+          - added nsca replacements docs
+
+1.0.3  Wed Mar 23 21:53:09 CET 2011
+          - fixed worker handling exit codes > 127
+
+1.0.2  Fri Mar 11 10:30:21 CET 2011
+          - added new option do_hostchecks to completly disable hostchecks
+          - fixed reading keyfiles
+
+1.0.1  Sat Mar  5 15:47:22 CET 2011
+          - added spawn-rate option for worker
+          - added perfdata_mode option to prevent perfdata queue getting to big
+          - made gearmand init script work with old libevent versions
+          - fixed make dist
+          - fixed "make rpm" for SLES11
+
+1.0    Mon Feb  7 11:05:29 CET 2011
+          - added dupserver option (Mark Clarkson)
+          - added stderr to send_multi
+          - added missing performance data to send_multi
+          - added error message when using unknown option
+          - fixed handling of unusual exit codes
+
+0.9    Sun Jan 16 21:20:06 CET 2011
+          - prepared debian packaging (Stig Sandbeck Mathisen)
+          - increased max output to 64k
+          - fixed default paths in gearmand init script
+          - fixed problem with too low number of workers after running for a while
+          - fixed problem with uppercase service descriptions in send_gearman
+
+0.8    Wed Nov 17 14:11:54 CET 2010
+          - added send_multi (Matthias Flacke)
+          - fixed checks with popen/exec
+
+0.7    Wed Nov  3 14:01:23 CET 2010
+          - added identifier to worker config. Usefull when running more than one worker per host
+          - added spec file for building rpms
+          - removed duplicate errors about connection problems
+          - fixed logging when loaded after the livestatus module
+
 0.6    Wed Oct 13 09:25:14 CEST 2010
           - added flexible column size for gearman_top
           - fixed starting status worker on reload

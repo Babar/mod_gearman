@@ -17,7 +17,12 @@ stamp-h1
 mod_gearman_worker
 01_utils
 02_full
+03_exec
+04_log
 images
 send_gearman
+send_multi
 check_gearman
 gearman_top
+*.gz
+*.rpm

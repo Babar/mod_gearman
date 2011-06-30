@@ -1,89 +1,104 @@
-/*-
- * Copyright (c) 2004 Nik Clayton
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- */
+#ifndef __TAP_H__
+#define __TAP_H__
 
-/* '## __VA_ARGS__' is a gcc'ism. C99 doesn't allow the token pasting
-   and requires the caller to add the final comma if they've ommitted
-   the optional arguments */
-#ifdef __GNUC__
-# define ok(e, test, ...) ((e) ?					\
-			   _gen_result(1, __func__, __FILE__, __LINE__,	\
-				       test, ## __VA_ARGS__) :		\
-			   _gen_result(0, __func__, __FILE__, __LINE__,	\
-				       test, ## __VA_ARGS__))
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-# define ok1(e) ((e) ?							\
-		 _gen_result(1, __func__, __FILE__, __LINE__, "%s", #e) : \
-		 _gen_result(0, __func__, __FILE__, __LINE__, "%s", #e))
+#ifndef va_copy
+#define va_copy(d,s) ((d) = (s))
+#endif
 
-# define pass(test, ...) ok(1, test, ## __VA_ARGS__);
-# define fail(test, ...) ok(0, test, ## __VA_ARGS__);
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdarg.h>
 
-# define skip_start(test, n, fmt, ...)			\
-	do {						\
-		if((test)) {				\
-			skip(n, fmt, ## __VA_ARGS__);	\
-			continue;			\
-		}
-#elif __STDC_VERSION__ >= 199901L /* __GNUC__ */
-# define ok(e, ...) ((e) ?						\
-		     _gen_result(1, __func__, __FILE__, __LINE__,	\
-				 __VA_ARGS__) :				\
-		     _gen_result(0, __func__, __FILE__, __LINE__,	\
-				 __VA_ARGS__))
+int     vok_at_loc      (const char *file, int line, int test, const char *fmt,
+                         va_list args);
+int     ok_at_loc       (const char *file, int line, int test, const char *fmt,
+                         ...);
+int     is_at_loc       (const char *file, int line, const char *got,
+                         const char *expected, const char *fmt, ...);
+int     isnt_at_loc     (const char *file, int line, const char *got,
+                         const char *expected, const char *fmt, ...);
+int     cmp_ok_at_loc   (const char *file, int line, int a, const char *op,
+                         int b, const char *fmt, ...);
+int     bail_out        (int ignore, const char *fmt, ...);
+void    cplan           (int tests, const char *fmt, ...);
+int     diag            (const char *fmt, ...);
+int     note            (const char *fmt, ...);
+int     exit_status     (void);
+void    skippy          (int n, const char *fmt, ...);
+void    ctodo           (int ignore, const char *fmt, ...);
+void    cendtodo        (void);
 
-# define ok1(e) ((e) ?							\
-		 _gen_result(1, __func__, __FILE__, __LINE__, "%s", #e) : \
-		 _gen_result(0, __func__, __FILE__, __LINE__, "%s", #e))
+#define NO_PLAN          -1
+#define SKIP_ALL         -2
+#define ok(...)          ok_at_loc(__FILE__, __LINE__, __VA_ARGS__, NULL)
+#define is(...)          is_at_loc(__FILE__, __LINE__, __VA_ARGS__, NULL)
+#define isnt(...)        isnt_at_loc(__FILE__, __LINE__, __VA_ARGS__, NULL)
+#define cmp_ok(...)      cmp_ok_at_loc(__FILE__, __LINE__, __VA_ARGS__, NULL)
+#define plan(...)        cplan(__VA_ARGS__, NULL)
+#define done_testing     return exit_status()
+#define BAIL_OUT(...)    bail_out(0, ## __VA_ARGS__, NULL)
 
-# define pass(...) ok(1, __VA_ARGS__);
-# define fail(...) ok(0, __VA_ARGS__);
+#define skip(test, ...)  do {if (test) {skippy(__VA_ARGS__, NULL); break;}
+#define endskip          } while (0)
 
-# define skip_start(test, n, ...)			\
-	do {						\
-		if((test)) {				\
-			skip(n,  __VA_ARGS__);		\
-			continue;			\
-		}
-#else /* __STDC_VERSION__ */
-# error "Needs gcc or C99 compiler for variadic macros."
-#endif /* __STDC_VERSION__ */
+#define todo(...)        ctodo(0, ## __VA_ARGS__, NULL)
+#define endtodo          cendtodo()
 
-# define skip_end } while(0);
+#define dies_ok(...)     dies_ok_common(1, ## __VA_ARGS__)
+#define lives_ok(...)    dies_ok_common(0, ## __VA_ARGS__)
 
-unsigned int _gen_result(int, const char *, char *, unsigned int, char *, ...);
+#ifdef _WIN32
+#define pass(...)        ok_at_loc(__FILE__, __LINE__, 1, __VA_ARGS__, NULL)
+#define fail(...)        ok_at_loc(__FILE__, __LINE__, 0, __VA_ARGS__, NULL)
+#define like(...)        skippy(1, "like is not implemented on MSWin32")
+#define unlike(...)      like()
+#define dies_ok_common(...) \
+    skippy(1, "Death detection is not supported on MSWin32")
+#else
+#define pass(...)        ok(1, ## __VA_ARGS__)
+#define fail(...)        ok(0, ## __VA_ARGS__)
+#define like(...)        like_at_loc(1, __FILE__, __LINE__, __VA_ARGS__, NULL)
+#define unlike(...)      like_at_loc(0, __FILE__, __LINE__, __VA_ARGS__, NULL)
+int     like_at_loc     (int for_match, const char *file, int line,
+                         const char *got, const char *expected,
+                         const char *fmt, ...);
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+int tap_test_died (int status);
+#define dies_ok_common(for_death, code, ...)                \
+    do {                                                    \
+        tap_test_died(1);                                   \
+        int cpid = fork();                                  \
+        switch (cpid) {                                     \
+        case -1:                                            \
+            perror("fork error");                           \
+            exit(1);                                        \
+        case 0:                                             \
+            close(1);                                       \
+            close(2);                                       \
+            code                                            \
+            tap_test_died(0);                               \
+            exit(0);                                        \
+        }                                                   \
+        if (waitpid(cpid, NULL, 0) < 0) {                   \
+            perror("waitpid error");                        \
+            exit(1);                                        \
+        }                                                   \
+        int it_died = tap_test_died(0);                     \
+        if (!it_died)                                       \
+            {code}                                          \
+        ok(for_death ? it_died : !it_died, ## __VA_ARGS__); \
+    } while (0)
+#endif
 
-int plan_no_plan(void);
-int plan_skip_all(char *);
-int plan_tests(unsigned int);
+#ifdef __cplusplus
+}
+#endif
 
-unsigned int diag(char *, ...);
+#endif
 
-int skip(unsigned int, char *, ...);
-
-void todo_start(char *, ...);
-void todo_end(void);
-
-int exit_status(void);
